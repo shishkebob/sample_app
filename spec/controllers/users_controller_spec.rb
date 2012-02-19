@@ -2,6 +2,22 @@ require 'spec_helper'
 
 describe UsersController do
   render_views
+  
+  describe "GET 'new'" do
+    before(:each) do
+      @user = Factory(:user)
+    end
+    
+    it "should be success" do
+      get :show, :id => @user.id
+      response.should be_success
+    end
+    
+    it "should find the right user" do
+      get :show, :id => @user.id
+      assigns(:user).should == @user
+    end
+  end
 
   describe "GET 'new'" do
     it "returns http success" do
