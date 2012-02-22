@@ -3,7 +3,44 @@ require 'spec_helper'
 describe UsersController do
   render_views
   
-  describe "GET 'new'" do
+  describe "GET 'index'" do
+    
+    describe "for non-signed-in users" do
+      it "should deny access" do
+        get :index
+        response.should redirect_to(signin_path)  
+      end
+    end
+    
+    describe "for signed-in users" do
+      
+      before(:each) do
+        @user = test_sign_in(Factory(:user))
+        Factory(:user, :email => "another@example1.com")
+        Factory(:user, :email => "another@example2.com")
+      end
+      
+      it "should be successful pages" do
+         get :index
+         response.should be_success
+      end
+      
+      it "should have the right title" do
+        get :index
+        response.should have_selector('title', :content => "All users")
+      end
+      
+      it "should have an element for each user" do
+        get :index
+        User.all.each do |user|
+          response.should have_selector('li', :content => user.name)
+        end
+      end
+    end
+    
+  end
+  
+  describe "GET 'show'" do
     before(:each) do
       @user = Factory(:user)
     end
@@ -38,8 +75,9 @@ describe UsersController do
       response.should have_selector('td>a', :content => user_path(@user),
                                             :href    => user_path(@user))
     end
+  end
     
-    #describe "GET 'new'" do
+  describe "GET 'new'" do
     it "returns http success" do
       get 'new'
       response.should be_success
@@ -48,8 +86,7 @@ describe UsersController do
     it "should have the right title" do
       get 'new'
       response.should have_selector('title', :content => "Sign up")
-    end
-  #end
+    end  
   end
   
   describe "POST 'create'" do
