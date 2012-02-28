@@ -6,4 +6,11 @@
 		</span>
 			
 	</td>
+	<% if current_user?(micropost.user) %>
+		<td>
+			<%= link_to "delete", micropost, :method => :delete,
+											 :confirm => "You sure?",
+											 :title => micropost.content %>		
+		</td>
+	<% end %>
 </tr>
